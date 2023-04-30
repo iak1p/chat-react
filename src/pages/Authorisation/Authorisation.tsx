@@ -1,7 +1,6 @@
 import { Button, Card, TextField, Typography } from "@mui/material";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import { auth } from "../../firebase";
 import {
@@ -14,19 +13,16 @@ import {
 function Authorisation() {
   const [error, setError] = useState<string>("");
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const handleSubmit = async (event: any) => {
     setError("");
     event.preventDefault();
     const email: string = event.target[0].value;
     const password: string = event.target[1].value;
-    console.log(email, password);
 
     try {
       let res = await signInWithEmailAndPassword(auth, email, password);
       localStorage.setItem("uid", res.user.uid);
-      dispatch({ type: "SET_USER", payload: res.user });
       navigate("/chat");
     } catch (err: any) {
       setError(err.code);

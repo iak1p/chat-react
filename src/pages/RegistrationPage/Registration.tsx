@@ -9,12 +9,10 @@ import {
 } from "./RegistrationPageStyle";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, db } from "../../firebase";
-import { useDispatch } from "react-redux";
 import { doc, setDoc } from "firebase/firestore";
 
 function Registration() {
   const [error, setError] = useState<string>();
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleSubmit = async (event: any) => {
@@ -26,7 +24,6 @@ function Registration() {
 
     try {
       let res = await createUserWithEmailAndPassword(auth, email, password);
-      dispatch({ type: "SET_USER", payload: res.user });
       localStorage.setItem("uid", res.user.uid);
 
       await updateProfile(res.user, {
@@ -39,7 +36,7 @@ function Registration() {
         displayName: res.user.displayName,
       });
 
-      await setDoc(doc(db, "userChat", res.user.uid), {});
+      await setDoc(doc(db, "userChats", res.user.uid), {});
       navigate("/chat");
     } catch (err: any) {
       setError(err.code);

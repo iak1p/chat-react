@@ -1,5 +1,77 @@
-import React from "react";
+import { TextField, Typography } from "@mui/material";
+import { Box } from "@mui/system";
+import { onAuthStateChanged } from "firebase/auth";
+import { arrayUnion, doc, Timestamp, updateDoc } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { auth, db } from "../../firebase";
+import Messages from "../Messages/Messages";
+
+interface User {
+  displayName?: string;
+  uid?: string;
+  email?: string;
+}
 
 export default function ChatRightSide() {
-  return <div>ChatRightSide</div>;
+  const [message, setMessage] = useState<string>("");
+  const [currentUser, setCurrentUser] = useState<User>({});
+  const currentUserUid = localStorage.getItem("uid") || "";
+  const mixedUID = useSelector((state: any) => state.mixedId);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await onAuthStateChanged(auth, (userCur: any) => {
+        if (userCur) {
+          setCurrentUser(userCur);
+        }
+      });
+    };
+
+    fetchData().catch(console.error);
+  });
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    try {
+      if (message !== "") {
+        await updateDoc(doc(db, "chats", mixedUID), {
+          messages: arrayUnion({
+            id: Math.random() * 1000000000,
+            text: message,
+            senderId: currentUserUid,
+            date: Timestamp.now(),
+          }),
+        });
+      }
+      setMessage("");
+    } catch (error) {}
+  };
+
+  return (
+    <>
+      {!mixedUID ? (
+        "No chat"
+      ) : (
+        <Box
+          sx={{ width: "78%", display: "flex", flexDirection: "column", padding: "20px" }}
+        >
+          <Typography component="p" variant="h6">
+            zcx
+          </Typography>
+          <Messages />
+          <form onSubmit={handleSubmit}>
+            <TextField
+              id="outlined-basic"
+              label="Message"
+              variant="outlined"
+              size="small"
+              sx={{ width: "100%", margin: "20px 0px" }}
+              onChange={(e) => setMessage(e.target.value)}
+            />
+          </form>
+        </Box>
+      )}
+    </>
+  );
 }

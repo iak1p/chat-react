@@ -1,5 +1,5 @@
 export const LEFT_SIDE_STYLE: any = {
-  width: "250px",
+  width: "22%",
   backgroundColor: "lightgrey",
   padding: "20px",
 };
