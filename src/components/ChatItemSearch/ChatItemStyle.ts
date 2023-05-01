@@ -14,4 +14,7 @@ export const IMAGE_STYLE: any = {
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
+  backgroundColor: `rgb(${Math.random() * 256},${Math.random() * 256},${
+    Math.random() * 256
+  })`,
 };

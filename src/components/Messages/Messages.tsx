@@ -4,6 +4,7 @@ import { doc, onSnapshot } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { db } from "../../firebase";
+import { OWNER, USER } from "./MessagesStyle";
 
 function Messages() {
   const mixedUID = useSelector((state: any) => state.mixedId);
@@ -28,29 +29,7 @@ function Messages() {
         {messages?.map((message: any) => (
           <Typography
             key={message.id}
-            sx={
-              message.senderId === localStorage.getItem("uid")
-                ? {
-                    color: "white",
-                    padding: "10px",
-                    marginBottom: "10px",
-                    marginRight: "0",
-                    marginLeft: "auto ",
-                    borderRadius: "2px",
-                    backgroundColor: "gray",
-                    width: "fit-content",
-                    textAlign: "right",
-                  }
-                : {
-                    color: "white",
-                    textAlign: "right",
-                    padding: "10px",
-                    margin: "10px 0",
-                    borderRadius: "2px",
-                    backgroundColor: "lightsalmon",
-                    width: "fit-content",
-                  }
-            }
+            sx={message.senderId === localStorage.getItem("uid") ? OWNER : USER}
           >
             {message.text}
           </Typography>

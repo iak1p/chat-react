@@ -1,35 +1,18 @@
 import { TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import { onAuthStateChanged } from "firebase/auth";
 import { arrayUnion, doc, Timestamp, updateDoc } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { auth, db } from "../../firebase";
+import { db } from "../../firebase";
 import Messages from "../Messages/Messages";
-
-interface User {
-  displayName?: string;
-  uid?: string;
-  email?: string;
-}
+import NoSelectedChat from "../NoSelectedChat/NoSelectedChat";
 
 export default function ChatRightSide() {
   const [message, setMessage] = useState<string>("");
-  const [currentUser, setCurrentUser] = useState<User>({});
   const currentUserUid = localStorage.getItem("uid") || "";
   const mixedUID = useSelector((state: any) => state.mixedId);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      await onAuthStateChanged(auth, (userCur: any) => {
-        if (userCur) {
-          setCurrentUser(userCur);
-        }
-      });
-    };
-
-    fetchData().catch(console.error);
-  });
+  const currentChat = useSelector((state: any) => state.currentChat);
+  const currentChatUID = useSelector((state: any) => state.currentChatUID);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -42,6 +25,18 @@ export default function ChatRightSide() {
             senderId: currentUserUid,
             date: Timestamp.now(),
           }),
+        });
+        await updateDoc(doc(db, "userChats", currentUserUid), {
+          [`${mixedUID}.lastMessage`]: {
+            date: Date.now(),
+            message: message,
+          },
+        });
+        await updateDoc(doc(db, "userChats", currentChatUID), {
+          [`${mixedUID}.lastMessage`]: {
+            date: Date.now(),
+            message: message,
+          },
         });
       }
       setMessage("");
@@ -60,7 +55,7 @@ export default function ChatRightSide() {
             borderBottom: "1px solid black",
           }}
         >
-          {localStorage.getItem("currentChat")}
+          {currentChat}
         </Typography>
         <Box
           sx={{
@@ -70,7 +65,7 @@ export default function ChatRightSide() {
             margin: "20px 0",
           }}
         >
-          {!mixedUID ? "No chat" : <Messages />}
+          {!mixedUID ? <NoSelectedChat /> : <Messages />}
         </Box>
         <form onSubmit={handleSubmit} style={{ borderTop: "1px solid black" }}>
           <TextField

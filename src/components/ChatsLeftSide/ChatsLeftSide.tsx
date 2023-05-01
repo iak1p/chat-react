@@ -17,6 +17,7 @@ import {
 } from "firebase/firestore";
 import { Navigate } from "react-router-dom";
 import OpenChat from "../OpenChat/OpenChat";
+import { useDispatch } from "react-redux";
 
 interface User {
   displayName?: string;
@@ -29,6 +30,7 @@ export default function ChatsLeftSide() {
   const [usersAfterSearch, setUsersAfterSearch] = useState<User[]>([]);
   const [displayName, setDisplayName] = useState<string>("");
   const [currentUser, setCurrentUser] = useState<User>({});
+  const dispatch = useDispatch();
 
   const currentUserUid = localStorage.getItem("uid") || "";
 
@@ -86,6 +88,10 @@ export default function ChatsLeftSide() {
             uid: currentUser.uid,
             displayName: currentUser.displayName,
           },
+          [`${mixedId}.lastMessage`]: {
+            date: "",
+            message: "No messages",
+          },
         });
 
         await updateDoc(doc(db, "userChats", currentUserUid), {
@@ -93,9 +99,16 @@ export default function ChatsLeftSide() {
             uid: clickedUser.uid,
             displayName: clickedUser.displayName,
           },
+          [`${mixedId}.lastMessage`]: {
+            date: "",
+            message: "No messages",
+          },
         });
       } catch (err) {}
     }
+    dispatch({ type: "SET_MIXED_UID", payload: mixedId });
+    dispatch({ type: "SET_CURRENT_CHAT", payload: clickedUser.displayName });
+    dispatch({ type: "SET_CURRENT_CHAT_UID", payload: clickedUser.uid });
     setUsersAfterSearch([]);
     setDisplayName("");
   };
@@ -122,12 +135,12 @@ export default function ChatsLeftSide() {
           value={displayName}
         />
         {error ? error : ""}
-        {usersAfterSearch ? (
+        {!usersAfterSearch ? (
+          <Typography component="p">Current user</Typography>
+        ) : (
           usersAfterSearch?.map((user) => (
             <ChatItemSearch user={user} key={user.uid} handleClick={handleClick} />
           ))
-        ) : (
-          <p>No users</p>
         )}
         <hr />
         <OpenChat />
