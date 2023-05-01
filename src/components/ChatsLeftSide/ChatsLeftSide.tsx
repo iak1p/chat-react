@@ -122,11 +122,14 @@ export default function ChatsLeftSide() {
           value={displayName}
         />
         {error ? error : ""}
-        {usersAfterSearch?.map((user) => {
-          return <ChatItemSearch user={user} key={user.uid} handleClick={handleClick} />;
-        })}
+        {usersAfterSearch ? (
+          usersAfterSearch?.map((user) => (
+            <ChatItemSearch user={user} key={user.uid} handleClick={handleClick} />
+          ))
+        ) : (
+          <p>No users</p>
+        )}
         <hr />
-        <Typography component="p">Chats</Typography>
         <OpenChat />
       </Box>
     </>

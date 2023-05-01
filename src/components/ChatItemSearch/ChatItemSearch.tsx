@@ -4,7 +4,6 @@ import { DIV_STYLE, IMAGE_STYLE } from "./ChatItemStyle";
 
 function ChatItemSearch(props: any) {
   const { user, handleClick } = props;
-  
 
   return (
     <>
@@ -19,7 +18,9 @@ function ChatItemSearch(props: any) {
             {user.displayName ? user.displayName[0].toUpperCase() : ""}
           </Typography>
         </Box>
-        {user.displayName}
+        <Typography component="p" sx={{ paddingLeft: "20px" }}>
+          {user.displayName}
+        </Typography>
       </Box>
     </>
   );

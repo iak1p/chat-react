@@ -50,28 +50,40 @@ export default function ChatRightSide() {
 
   return (
     <>
-      {!mixedUID ? (
-        "No chat"
-      ) : (
-        <Box
-          sx={{ width: "78%", display: "flex", flexDirection: "column", padding: "20px" }}
+      <Box
+        sx={{ width: "78%", display: "flex", flexDirection: "column", padding: "20px" }}
+      >
+        <Typography
+          component="p"
+          variant="h6"
+          sx={{
+            borderBottom: "1px solid black",
+          }}
         >
-          <Typography component="p" variant="h6">
-            zcx
-          </Typography>
-          <Messages />
-          <form onSubmit={handleSubmit}>
-            <TextField
-              id="outlined-basic"
-              label="Message"
-              variant="outlined"
-              size="small"
-              sx={{ width: "100%", margin: "20px 0px" }}
-              onChange={(e) => setMessage(e.target.value)}
-            />
-          </form>
+          {localStorage.getItem("currentChat")}
+        </Typography>
+        <Box
+          sx={{
+            height: "100%",
+            overflow: "scroll",
+            overflowX: "hidden",
+            margin: "20px 0",
+          }}
+        >
+          {!mixedUID ? "No chat" : <Messages />}
         </Box>
-      )}
+        <form onSubmit={handleSubmit} style={{ borderTop: "1px solid black" }}>
+          <TextField
+            id="outlined-basic"
+            label="Message"
+            variant="outlined"
+            size="small"
+            sx={{ width: "100%", margin: "20px 0px" }}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+          />
+        </form>
+      </Box>
     </>
   );
 }

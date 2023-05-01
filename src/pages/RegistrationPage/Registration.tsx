@@ -1,12 +1,7 @@
-import { Button, Card, TextField, Typography } from "@mui/material";
+import { Alert, Button, Card, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import {
-  BUTTON_STYLE,
-  FORM_STYLE,
-  INPUT_STYLE,
-  ERROR_TEXT,
-} from "./RegistrationPageStyle";
+import { BUTTON_STYLE, FORM_STYLE, INPUT_STYLE } from "./RegistrationPageStyle";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, db } from "../../firebase";
 import { doc, setDoc } from "firebase/firestore";
@@ -74,13 +69,7 @@ function Registration() {
             Continue
           </Button>
         </form>
-        {error ? (
-          <Typography component="p" sx={ERROR_TEXT}>
-            {error}
-          </Typography>
-        ) : (
-          ""
-        )}
+        {error ? <Alert severity="error">{error}</Alert> : ""}
         <Typography component="p" sx={{}}>
           Already have account?
           <NavLink to="/authorisation">Authorisation</NavLink>
