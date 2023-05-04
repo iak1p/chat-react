@@ -3,10 +3,21 @@ import { Box } from "@mui/system";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { auth, db } from "../../firebase";
-import ChatItem from "../ChatItem";
+import ChatItemSearch from "../ChatItemSearch/ChatItemSearch";
 import { HEADER_STYLE, LEFT_SIDE_STYLE } from "./ChatLeftSideStyle";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { Navigate } from "react-router-dom";
+import OpenChat from "../OpenChat/OpenChat";
+import { useDispatch } from "react-redux";
 
 interface User {
   displayName?: string;
@@ -16,15 +27,18 @@ interface User {
 
 export default function ChatsLeftSide() {
   const [error, setError] = useState<string>();
-  const [user, setUser] = useState<User>({});
-  const [users, setUsers] = useState<User[]>([]);
+  const [usersAfterSearch, setUsersAfterSearch] = useState<User[]>([]);
   const [displayName, setDisplayName] = useState<string>("");
+  const [currentUser, setCurrentUser] = useState<User>({});
+  const dispatch = useDispatch();
+
+  const currentUserUid = localStorage.getItem("uid") || "";
 
   useEffect(() => {
     const fetchData = async () => {
       await onAuthStateChanged(auth, (userCur: any) => {
         if (userCur) {
-          setUser(userCur);
+          setCurrentUser(userCur);
         }
       });
     };
@@ -37,11 +51,11 @@ export default function ChatsLeftSide() {
 
     try {
       const querySnapshot: any = await getDocs(q);
-      let array: any = [];
+      let array: any | User[] = [];
       querySnapshot.forEach((doc: any) => {
         array.push(doc.data());
       });
-      setUsers(array);
+      setUsersAfterSearch(array);
     } catch (err: any) {
       setError(err.code);
     }
@@ -58,18 +72,59 @@ export default function ChatsLeftSide() {
       });
   };
 
+  const handleClick = async (clickedUser: any) => {
+    const mixedId =
+      clickedUser.uid > currentUserUid
+        ? clickedUser.uid + currentUserUid
+        : currentUserUid + clickedUser.uid;
+    const docSnap = await getDoc(doc(db, "chats", mixedId));
+
+    if (!docSnap.exists()) {
+      try {
+        await setDoc(doc(db, "chats", mixedId), { messages: [] });
+
+        await updateDoc(doc(db, "userChats", clickedUser.uid), {
+          [`${mixedId}.userInfo`]: {
+            uid: currentUser.uid,
+            displayName: currentUser.displayName,
+          },
+          [`${mixedId}.lastMessage`]: {
+            date: "",
+            message: "No messages",
+          },
+        });
+
+        await updateDoc(doc(db, "userChats", currentUserUid), {
+          [`${mixedId}.userInfo`]: {
+            uid: clickedUser.uid,
+            displayName: clickedUser.displayName,
+          },
+          [`${mixedId}.lastMessage`]: {
+            date: "",
+            message: "No messages",
+          },
+        });
+      } catch (err) {}
+    }
+    dispatch({ type: "SET_MIXED_UID", payload: mixedId });
+    dispatch({ type: "SET_CURRENT_CHAT", payload: clickedUser.displayName });
+    dispatch({ type: "SET_CURRENT_CHAT_UID", payload: clickedUser.uid });
+    setUsersAfterSearch([]);
+    setDisplayName("");
+  };
+
   return (
     <>
       <Box sx={LEFT_SIDE_STYLE}>
         <Box sx={HEADER_STYLE}>
-          <Typography component="p">Current user: {user.displayName}</Typography>
+          <Typography component="p">Current user: {currentUser.displayName}</Typography>
           <Button variant="contained" onClick={() => logOut()}>
             Log out
           </Button>
         </Box>
         <TextField
           id="outlined-basic"
-          label="Outlined"
+          label="Search user"
           variant="outlined"
           size="small"
           sx={{ width: "100%", margin: "20px 0px" }}
@@ -77,12 +132,18 @@ export default function ChatsLeftSide() {
           onKeyDown={(e) => {
             e.code === "Enter" && searchUser();
           }}
+          value={displayName}
         />
-        {users?.length === 0 ? "No users" : ""}
         {error ? error : ""}
-        {users?.map((user) => {
-          return <ChatItem user={user} key={user.uid} />;
-        })}
+        {!usersAfterSearch ? (
+          <Typography component="p">Current user</Typography>
+        ) : (
+          usersAfterSearch?.map((user) => (
+            <ChatItemSearch user={user} key={user.uid} handleClick={handleClick} />
+          ))
+        )}
+        <hr />
+        <OpenChat />
       </Box>
     </>
   );
