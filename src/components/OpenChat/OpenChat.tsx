@@ -1,9 +1,10 @@
 import { Box, Typography } from "@mui/material";
 import { doc, onSnapshot } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { db } from "../../firebase";
 import { DIV_STYLE, IMAGE_STYLE } from "../ChatItemSearch/ChatItemStyle";
+import { LAST_MESSAGE_STYLE, USER_DIV_STYLE } from "./OpenChatStyle";
 
 interface User {
   displayName?: string;
@@ -11,8 +12,7 @@ interface User {
   email?: string;
   date: any;
 }
-
-function OpenChat() {
+const OpenChat = () => {
   const [usersWithChat, setUsersWithChat] = useState<User[]>([]);
   const currentUserUid = localStorage.getItem("uid") || "";
   const dispatch = useDispatch();
@@ -32,6 +32,7 @@ function OpenChat() {
 
   const handleClick = (uid: string, name: string) => {
     const mixedId = uid > currentUserUid ? uid + currentUserUid : currentUserUid + uid;
+
     dispatch({ type: "SET_MIXED_UID", payload: mixedId });
     dispatch({ type: "SET_CURRENT_CHAT", payload: name });
     dispatch({ type: "SET_CURRENT_CHAT_UID", payload: uid });
@@ -40,7 +41,10 @@ function OpenChat() {
   return (
     <>
       {Object.entries(usersWithChat)
-        ?.sort((a: any, b: any) => b[1].lastMessage.date - a[1].lastMessage.date)
+        ?.sort(
+          (a: any, b: any) =>
+            Date.parse(b[1].lastMessage.date) - Date.parse(a[1].lastMessage.date)
+        )
         .map((user: any) => {
           return (
             <Box
@@ -57,12 +61,18 @@ function OpenChat() {
                     : ""}
                 </Typography>
               </Box>
-              <Box sx={{ display: "flex", flexDirection: "column", paddingLeft: "10px" }}>
+              <Box sx={USER_DIV_STYLE}>
                 <Typography component="p" variant="h6" sx={{ fontSize: "16px" }}>
                   {user[1].userInfo.displayName}
                 </Typography>
-                <Typography component="p" sx={{ color: "gray", fontSize: "14px" }}>
+                <Typography component="p" sx={LAST_MESSAGE_STYLE}>
                   {user[1].lastMessage.message}
+                </Typography>
+                <Typography component="p" sx={LAST_MESSAGE_STYLE}>
+                  {Math.floor(
+                    (Date.now() - Date.parse(user[1].lastMessage.date)) / 1000 / 60
+                  )}{" "}
+                  minutes ago
                 </Typography>
               </Box>
             </Box>
@@ -70,6 +80,6 @@ function OpenChat() {
         })}
     </>
   );
-}
+};
 
-export default OpenChat;
+export default memo(OpenChat);

@@ -2,7 +2,7 @@ import { Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { DIV_STYLE, IMAGE_STYLE } from "./ChatItemStyle";
 
-function ChatItemSearch(props: any) {
+const ChatItemSearch = (props: any) => {
   const { user, handleClick } = props;
 
   return (
@@ -24,6 +24,6 @@ function ChatItemSearch(props: any) {
       </Box>
     </>
   );
-}
+};
 
 export default ChatItemSearch;

@@ -1,6 +1,6 @@
 import { Button, Card, TextField, Typography } from "@mui/material";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { auth } from "../../firebase";
 import {
@@ -10,7 +10,7 @@ import {
   ERROR_TEXT,
 } from "../RegistrationPage/RegistrationPageStyle";
 
-function Authorisation() {
+const Authorisation = () => {
   const [error, setError] = useState<string>("");
   const navigate = useNavigate();
 
@@ -68,6 +68,6 @@ function Authorisation() {
       </Card>
     </>
   );
-}
+};
 
-export default Authorisation;
+export default memo(Authorisation);

@@ -1,12 +1,12 @@
 import { Alert, Button, Card, TextField, Typography } from "@mui/material";
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { BUTTON_STYLE, FORM_STYLE, INPUT_STYLE } from "./RegistrationPageStyle";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, db } from "../../firebase";
 import { doc, setDoc } from "firebase/firestore";
 
-function Registration() {
+const Registration = () => {
   const [error, setError] = useState<string>();
   const navigate = useNavigate();
 
@@ -77,6 +77,6 @@ function Registration() {
       </Card>
     </>
   );
-}
+};
 
-export default Registration;
+export default memo(Registration);

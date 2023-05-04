@@ -1,7 +1,7 @@
 import { Button, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { auth, db } from "../../firebase";
 import ChatItemSearch from "../ChatItemSearch/ChatItemSearch";
 import { HEADER_STYLE, LEFT_SIDE_STYLE } from "./ChatLeftSideStyle";
@@ -25,7 +25,7 @@ interface User {
   email?: string;
 }
 
-export default function ChatsLeftSide() {
+const ChatsLeftSide: React.FC = () => {
   const [error, setError] = useState<string>();
   const [usersAfterSearch, setUsersAfterSearch] = useState<User[]>([]);
   const [displayName, setDisplayName] = useState<string>("");
@@ -147,4 +147,6 @@ export default function ChatsLeftSide() {
       </Box>
     </>
   );
-}
+};
+
+export default memo(ChatsLeftSide);

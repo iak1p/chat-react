@@ -6,7 +6,8 @@ import { useSelector } from "react-redux";
 import { db } from "../../firebase";
 import { OWNER, USER } from "./MessagesStyle";
 
-function Messages() {
+const Messages: React.FC<any> = (props) => {
+  const { refDiv } = props;
   const mixedUID = useSelector((state: any) => state.mixedId);
   const [messages, setMessages] = useState([]);
 
@@ -23,6 +24,10 @@ function Messages() {
     mixedUID && getChats();
   }, [mixedUID]);
 
+  useEffect(() => {
+    refDiv.current.scrollTop = refDiv.current.scrollHeight;
+  }, [messages, refDiv]);
+
   return (
     <>
       <Box sx={{ padding: "0 20px" }}>
@@ -37,6 +42,6 @@ function Messages() {
       </Box>
     </>
   );
-}
+};
 
 export default Messages;

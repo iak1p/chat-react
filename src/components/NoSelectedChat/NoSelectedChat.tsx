@@ -2,7 +2,7 @@ import { Box, Typography } from "@mui/material";
 import SentimentVeryDissatisfiedIcon from "@mui/icons-material/SentimentVeryDissatisfied";
 import { NO_MESSAGE_STYLE } from "./NoSelectedChatStyle";
 
-function NoSelectedChat() {
+const NoSelectedChat = () => {
   return (
     <>
       <Box>
@@ -13,6 +13,6 @@ function NoSelectedChat() {
       </Box>
     </>
   );
-}
+};
 
 export default NoSelectedChat;

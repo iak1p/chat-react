@@ -1,10 +1,10 @@
 import { Card } from "@mui/material";
-import React from "react";
+import React, { memo } from "react";
 import ChatsLeftSide from "../../components/ChatsLeftSide/ChatsLeftSide";
 import ChatRightSide from "../../components/ChatsRightSide/ChatRightSide";
 import { CHAT_STYLE } from "./ChatPageStyle";
 
-function ChatPage() {
+const ChatPage = () => {
   return (
     <>
       <Card sx={CHAT_STYLE}>
@@ -13,6 +13,6 @@ function ChatPage() {
       </Card>
     </>
   );
-}
+};
 
-export default ChatPage;
+export default memo(ChatPage);
