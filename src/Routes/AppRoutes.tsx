@@ -12,7 +12,12 @@ function AppRoutes() {
         element={localStorage.getItem("uid") ? <Navigate to="/chat" /> : <Registration />}
       />
       <Route path="/chat" element={<ChatPage />} />
-      <Route path="/authorisation" element={<Authorisation />} />
+      <Route
+        path="/authorisation"
+        element={
+          localStorage.getItem("uid") ? <Navigate to="/chat" /> : <Authorisation />
+        }
+      />
       <Route path="/" element={<Navigate replace to="/authorisation" />} />
     </Routes>
   );
