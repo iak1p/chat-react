@@ -24,7 +24,7 @@ const ChatRightSide: React.FC = () => {
         setMessage("");
         await updateDoc(doc(db, "chats", mixedUID), {
           messages: arrayUnion({
-            id: Math.random() * 1000000000,
+            id: crypto.randomUUID(),
             text: message,
             senderId: currentUserUid,
             date: Timestamp.now(),
